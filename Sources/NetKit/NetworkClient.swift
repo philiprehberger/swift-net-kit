@@ -161,8 +161,8 @@ public struct NetworkClient: Sendable {
             }
         }
 
-        let headers = Dictionary(
-            uniqueKeysWithValues: httpResponse.allHeaderFields.compactMap { key, value in
+        let headers: [String: String] = Dictionary(
+            uniqueKeysWithValues: httpResponse.allHeaderFields.compactMap { key, value -> (String, String)? in
                 guard let key = key as? String, let value = value as? String else { return nil }
                 return (key, value)
             }
