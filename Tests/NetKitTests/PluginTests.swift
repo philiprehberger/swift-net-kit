@@ -1,5 +1,8 @@
 import Testing
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 @testable import NetKit
 
 struct TestPlugin: NetworkPlugin {
@@ -8,6 +11,10 @@ struct TestPlugin: NetworkPlugin {
     func prepare(_ request: inout URLRequest) async throws {
         try await onPrepare(&request)
     }
+}
+
+final class MessageLog: @unchecked Sendable {
+    var messages: [String] = []
 }
 
 @Suite("Plugin Tests")
@@ -22,14 +29,14 @@ struct PluginTests {
 
     @Test("Logging plugin calls logger on prepare")
     func loggingPluginPrepare() async throws {
-        var messages: [String] = []
-        let plugin = LoggingPlugin { messages.append($0) }
+        let log = MessageLog()
+        let plugin = LoggingPlugin { log.messages.append($0) }
         var request = URLRequest(url: URL(string: "https://example.com/test")!)
         request.httpMethod = "GET"
         try await plugin.prepare(&request)
-        #expect(messages.count == 1)
-        #expect(messages[0].contains("GET"))
-        #expect(messages[0].contains("/test"))
+        #expect(log.messages.count == 1)
+        #expect(log.messages[0].contains("GET"))
+        #expect(log.messages[0].contains("/test"))
     }
 
     @Test("Network error descriptions are meaningful")
