@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// A declarative, type-safe networking client
 ///
@@ -113,7 +116,8 @@ public struct NetworkClient: Sendable {
 
     private func buildRequest(for endpoint: some Endpoint) throws -> URLRequest {
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: true)
-        components?.path = (components?.path ?? "") + endpoint.path
+        let existingPath = components?.path ?? ""
+        components?.path = existingPath + endpoint.path
 
         if !endpoint.queryItems.isEmpty {
             components?.queryItems = endpoint.queryItems

@@ -1,4 +1,7 @@
 import Foundation
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
 
 /// A plugin that logs requests and responses
 public struct LoggingPlugin: NetworkPlugin, Sendable {
